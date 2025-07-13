@@ -16,6 +16,15 @@
           align="center"
           color="white"
         ></a-text>
+        <a-plane
+          position="0 1.5 0"
+          width="1"
+          height="0.5"
+          color="#FF4444"
+          visible="true"
+        >
+          <a-text value="測試按鈕" color="white" align="center" position="0 0 0.01"></a-text>
+        </a-plane>
         <!-- 左邊虛擬按鈕 -->
         <a-plane
           position="-1 0.5 0"
@@ -57,45 +66,45 @@
       </a-entity>
     </a-scene>
     <script>
-      window.addEventListener("DOMContentLoaded", () => {
-        const marker = document.querySelector("#my-marker");
-        const text = document.querySelector("#markerText");
-        let clickBound = false;
+      // window.addEventListener("DOMContentLoaded", () => {
+      //   const marker = document.querySelector("#my-marker");
+      //   const text = document.querySelector("#markerText");
+      //   let clickBound = false;
 
-        marker.addEventListener("markerFound", () => {
-          console.log("marker found");
+      //   marker.addEventListener("markerFound", () => {
+      //     console.log("marker found");
 
-          // 顯示按鈕
-          marker.querySelectorAll(".marker-button").forEach((btn) => {
-            btn.setAttribute("visible", true);
-          });
+      //     // 顯示按鈕
+      //     marker.querySelectorAll(".marker-button").forEach((btn) => {
+      //       btn.setAttribute("visible", true);
+      //     });
 
-          // 顯示 marker 對應文字
-          const url = marker.getAttribute("url");
-          const match = url.match(/pattern-(.+)\.patt$/);
-          const letter = match ? match[1] : "?";
-          text.setAttribute("value", letter);
+      //     // 顯示 marker 對應文字
+      //     const url = marker.getAttribute("url");
+      //     const match = url.match(/pattern-(.+)\.patt$/);
+      //     const letter = match ? match[1] : "?";
+      //     text.setAttribute("value", letter);
 
-          // 點擊事件（只綁一次）
-          if (!clickBound) {
-            marker.querySelectorAll(".marker-button").forEach((el) => {
-              el.addEventListener("click", () => {
-                const btnLabel = el.querySelector("a-text").getAttribute("value");
-                alert("你按了按鈕：" + btnLabel);
-              });
-            });
-            clickBound = true;
-          }
-        });
+      //     // 點擊事件（只綁一次）
+      //     if (!clickBound) {
+      //       marker.querySelectorAll(".marker-button").forEach((el) => {
+      //         el.addEventListener("click", () => {
+      //           const btnLabel = el.querySelector("a-text").getAttribute("value");
+      //           alert("你按了按鈕：" + btnLabel);
+      //         });
+      //       });
+      //       clickBound = true;
+      //     }
+      //   });
 
-        marker.addEventListener("markerLost", () => {
-          console.log("marker lost");
-          marker.querySelectorAll(".marker-button").forEach((btn) => {
-            btn.setAttribute("visible", false);
-          });
-          text.setAttribute("value", "");
-        });
-      });
+      //   marker.addEventListener("markerLost", () => {
+      //     console.log("marker lost");
+      //     marker.querySelectorAll(".marker-button").forEach((btn) => {
+      //       btn.setAttribute("visible", false);
+      //     });
+      //     text.setAttribute("value", "");
+      //   });
+      // });
     </script>
   </body>
 </html>
