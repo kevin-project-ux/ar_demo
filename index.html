@@ -56,6 +56,7 @@
     <script>
       const marker = document.querySelector("#my-marker");
       const text = document.querySelector("#markerText");
+      let clickBound = false;
 
       marker.addEventListener("markerFound", () => {
         console.log("Marker found!");
@@ -68,9 +69,17 @@
         // 從檔名抓出 A（可支援 pattern-ABC123.patt）
         const match = patternUrl.match(/pattern-(.+)\.patt$/);
         const letter = match ? match[1] : "?";
-
         // 設定到文字元件上
         text.setAttribute("value", letter);
+
+        if (!clickBound) {
+          marker.querySelectorAll('.marker-button').forEach(el => {
+            el.addEventListener('click', () => {
+              alert(`你按了按鈕！文字是：${el.querySelector('a-text').getAttribute('value')}`);
+            });
+          });
+          clickBound = true;
+        }
       });
 
       marker.addEventListener("markerLost", () => {
@@ -79,12 +88,6 @@
           btn.setAttribute("visible", false);
         });
         text.setAttribute("value", "");
-      });
-
-      document.querySelectorAll('.marker-button').forEach(el => {
-        el.addEventListener('click', () => {
-          alert('按下了按鈕');
-        });
       });
     </script>
   </body>
