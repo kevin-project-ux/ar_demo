@@ -4,6 +4,7 @@
     <title>AR.js NFT A/B Example</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar-nft.min.js"></script>
+    <script src="https://unpkg.com/aframe-bmfont-text-component/dist/aframe-bmfont-text-component.min.js"></script>
   </head>
   </head>
   <body style="margin:0;overflow:hidden;">
@@ -21,12 +22,18 @@
         </a-plane>
         <a-text
           value="測試按鈕"
+          font="https://cdn.aframe.io/fonts/Exo2Bold.fnt"
           position="0 1 0.1"
-          color="black"
+          color="white"
           align="center"
           width="3"
           material="side: double"
         />
+        <a-entity
+          bmfont-text="text: 測試按鈕; align: center"
+          position="0 1 0"
+          scale="0.5 0.5 0.5"
+        ></a-entity>
       </a-marker>
       <a-entity camera>
         <a-entity cursor="fuse: false" raycaster="objects: .clickable" position="0 0 -1"></a-entity>
