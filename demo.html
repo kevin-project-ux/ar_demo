@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tesseract.js OCR Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+    <style>
+      body { font-family: sans-serif; padding: 20px; }
+      #preview { max-width: 300px; margin-bottom: 10px; }
+    </style>
+  </head>
+  <body>
+    <h2>OCR 辨識文字</h2>
+    <input type="file" id="fileInput" accept="image/*" />
+    <br />
+    <img id="preview" />
+    <p><strong>辨識結果：</strong></p>
+    <pre id="result"></pre>
+
+    <script>
+      const fileInput = document.getElementById("fileInput");
+      const preview = document.getElementById("preview");
+      const result = document.getElementById("result");
+
+      fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const url = URL.createObjectURL(file);
+        preview.src = url;
+
+        result.textContent = "辨識中，請稍候...";
+
+        const worker = await Tesseract.createWorker();
+        await worker.loadLanguage("eng");
+        await worker.initialize("eng");
+
+        const { data } = await worker.recognize(url);
+        result.textContent = data.text;
+
+        await worker.terminate();
+      });
+    </script>
+  </body>
+</html>
