@@ -7,6 +7,8 @@
 <!-- support 3D text -->
 <script src="js/aframe-text-geometry-component.min.js"></script>
 
+<script src="https://unpkg.com/aframe-troika-text/dist/aframe-troika-text.min.js"></script>
+
 <body style="margin: 0px; overflow: hidden;">
 
 <a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
@@ -19,7 +21,7 @@
   <!-- 2D text -->
   <a-marker type="pattern" url="data/letterA.patt">
 
-    <a-entity id="light-ui">
+    <a-entity id="light-ui" troika-text="value: 開燈; font: url(/fonts/NotoSansTC-VariableFont_wght.ttf); fontSize: 0.1; color: black" position="0 1.6 -2">
       <!-- 開燈按鈕 -->
       <a-plane class="btn" id="btn-on"
         position="-1 0.5 0"
@@ -27,7 +29,7 @@
         height="0.5"
         color="#00CC00"
         material="side: double; opacity: 0.9">
-        <a-text value="開燈" font="fonts/Exo2Bold.fnt" align="center" color="green" position="0 0 0.01"></a-text>
+        <!-- <a-text value="開燈" font="fonts/NotoSansTC-VariableFont_wght.ttf" align="center" color="green" position="0 0 0.01"></a-text> -->
       </a-plane>
     
       <!-- 關燈按鈕 -->
@@ -37,7 +39,7 @@
         height="0.5"
         color="#CC0000"
         material="side: double; opacity: 0.9">
-        <a-text value="關燈" font="fonts/Exo2Bold.fnt" align="center" color="red" position="0 0 0.01"></a-text>
+        <a-text value="關燈" font="fonts/NotoSansTC-VariableFont_wght.ttf" align="center" color="red" position="0 0 0.01"></a-text>
       </a-plane>
     </a-entity>
 
