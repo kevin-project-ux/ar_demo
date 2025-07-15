@@ -18,12 +18,36 @@
 
   <!-- 2D text -->
   <a-marker type="pattern" url="data/letterA.patt">
+
+    <a-entity id="light-ui">
+      <!-- 開燈按鈕 -->
+      <a-plane class="btn" id="btn-on"
+        position="-1 0.5 0"
+        width="1"
+        height="0.5"
+        color="#00CC00"
+        material="side: double; opacity: 0.9">
+        <a-text value="開燈" font="fonts/Exo2Bold.fnt" align="center" color="green" position="0 0 0.01"></a-text>
+      </a-plane>
+    
+      <!-- 關燈按鈕 -->
+      <a-plane class="btn" id="btn-off"
+        position="1 0.5 0"
+        width="1"
+        height="0.5"
+        color="#CC0000"
+        material="side: double; opacity: 0.9">
+        <a-text value="關燈" font="fonts/Exo2Bold.fnt" align="center" color="red" position="0 0 0.01"></a-text>
+      </a-plane>
+    </a-entity>
+
+    <a-light id="scene-light" type="point" intensity="1" position="0 2 2"></a-light>
     
     <!-- positioning a plane directly below text for increased visibility; need to adjust position to avoid z-fighting.  -->
-    <a-plane color="white" rotation="-90 0 0" position="0 -0.25 0" width="3" material="transparent: true; opacity: 0.90"></a-plane>
+<!--     <a-plane color="white" rotation="-90 0 0" position="0 -0.25 0" width="3" material="transparent: true; opacity: 0.90"></a-plane> -->
 
     <!-- for more properties, see https://github.com/aframevr/aframe/blob/master/docs/components/text.md -->
-    <a-text value="Hello, world!" font="fonts/Exo2Bold.fnt" color="red" rotation="-90 0 0" align="center" scale="2 2 2"></a-text>
+<!--     <a-text value="Hello, world!" font="fonts/Exo2Bold.fnt" color="red" rotation="-90 0 0" align="center" scale="2 2 2"></a-text> -->
     
     <!-- positioning a second copy to attempt drop-shadow effect; need to adjust position to avoid z-fighting -->
     <!-- <a-text value="Hello, world!" font="fonts/Exo2Bold.fnt" color="black" rotation="-90 0 0" align="center" scale="2 2 2" position="0.01 -0.2 0"></a-text> -->
@@ -53,4 +77,15 @@
     
 </a-scene>
 </body>
+<script>
+  const light = document.querySelector("#scene-light");
+
+  document.querySelector("#btn-on").addEventListener("click", () => {
+    light.setAttribute("intensity", 1);
+  });
+
+  document.querySelector("#btn-off").addEventListener("click", () => {
+    light.setAttribute("intensity", 0);
+  });
+</script>
 </html>
