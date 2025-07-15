@@ -1,100 +1,56 @@
-<!DOCTYPE html>
+<!doctype HTML>
 <html>
-  <head>
-    <title>AR.js NFT A/B Example</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar-nft.min.js"></script>
-    <script src="https://unpkg.com/aframe-bmfont-text-component/dist/aframe-bmfont-text-component.min.js"></script>
-  </head>
-  </head>
-  <body style="margin:0;overflow:hidden;">
-    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;'>
-      <a-marker type='pattern' id="my-marker" url='./pattern-B.patt'>
-<!--         <a-sphere color="blue" radius="0.5" position="0 0.5 0"></a-sphere> -->
-<!--         <a-plane
-          position="0 0.5 0"
-          width="0.25"
-          height="0.25"
-          color="blue"
-          visible="true"
-          material="side: double"
-        >
-        </a-plane> -->
-        <a-text
-          value="HELLO 測試"
-          font="fonts/Exo2Bold.fnt"
-          position="0 1 0.1"
-          color="red"
-          align="center"
-          width="5"
-          material="side: double"
-        ></a-text>
-        <a-entity position="0 1 -2">
-          <a-plane width="0.25" height="0.3" color="#FF4444" material="side: double"></a-plane>
-          <a-text value="open" font="fonts/Exo2Bold.fnt" position="0 0 0.01" align="center" color="white" width="4" material="side: double"></a-text>
-        </a-entity>
-<!--         <a-plane
-          position="0 1 0"
-          width="1.5"
-          height="0.6"
-          color="#FF4444"
-          class="clickable"
-          material="side: double"
-        >
-          <a-text
-            value="開"
-            font="https://cdn.aframe.io/fonts/mozillavr.fnt"
-            position="0 0 0.01"
-            align="center"
-            color="white"
-            width="4"
-            material="side: double"
-          ></a-text>
-        </a-plane> -->
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<script src="js/aframe.min.js"></script>
+<script src="js/aframe-ar.js"></script>
 
-      </a-marker>
-      <a-entity camera></a-entity>
-    </a-scene>
-    <script>
-      // window.addEventListener("DOMContentLoaded", () => {
-      //   const marker = document.querySelector("#my-marker");
-      //   const text = document.querySelector("#markerText");
-      //   let clickBound = false;
+<!-- support 3D text -->
+<script src="js/aframe-text-geometry-component.min.js"></script>
 
-      //   marker.addEventListener("markerFound", () => {
-      //     console.log("marker found");
+<body style="margin: 0px; overflow: hidden;">
 
-      //     // 顯示按鈕
-      //     marker.querySelectorAll(".marker-button").forEach((btn) => {
-      //       btn.setAttribute("visible", true);
-      //     });
+<a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
 
-      //     // 顯示 marker 對應文字
-      //     const url = marker.getAttribute("url");
-      //     const match = url.match(/pattern-(.+)\.patt$/);
-      //     const letter = match ? match[1] : "?";
-      //     text.setAttribute("value", letter);
+  <a-assets>
+    <a-asset-item id="exoFont" src="fonts/exoBlack.typeface.json"></a-asset-item>
+    <img id="pixels" src="images/pixels.png" />
+  </a-assets>
 
-      //     // 點擊事件（只綁一次）
-      //     if (!clickBound) {
-      //       marker.querySelectorAll(".marker-button").forEach((el) => {
-      //         el.addEventListener("click", () => {
-      //           const btnLabel = el.querySelector("a-text").getAttribute("value");
-      //           alert("你按了按鈕：" + btnLabel);
-      //         });
-      //       });
-      //       clickBound = true;
-      //     }
-      //   });
+  <!-- 2D text -->
+  <a-marker type="pattern" url="data/letterA.patt">
+    
+    <!-- positioning a plane directly below text for increased visibility; need to adjust position to avoid z-fighting.  -->
+    <a-plane color="white" rotation="-90 0 0" position="0 -0.25 0" width="3" material="transparent: true; opacity: 0.90"></a-plane>
 
-      //   marker.addEventListener("markerLost", () => {
-      //     console.log("marker lost");
-      //     marker.querySelectorAll(".marker-button").forEach((btn) => {
-      //       btn.setAttribute("visible", false);
-      //     });
-      //     text.setAttribute("value", "");
-      //   });
-      // });
-    </script>
-  </body>
+    <!-- for more properties, see https://github.com/aframevr/aframe/blob/master/docs/components/text.md -->
+    <a-text value="Hello, world!" font="fonts/Exo2Bold.fnt" color="red" rotation="-90 0 0" align="center" scale="2 2 2"></a-text>
+    
+    <!-- positioning a second copy to attempt drop-shadow effect; need to adjust position to avoid z-fighting -->
+    <!-- <a-text value="Hello, world!" font="fonts/Exo2Bold.fnt" color="black" rotation="-90 0 0" align="center" scale="2 2 2" position="0.01 -0.2 0"></a-text> -->
+
+    
+    <!-- avoiding z-fighting is difficult; may want to render canvas to text instead -->
+
+  </a-marker>
+
+  <!-- 3D text -->
+  <a-marker type="pattern" url="data/letterB.patt">
+
+    <!-- 
+      using aframe-text-geometry component
+      can set: bevelSize, bevelThickness, curveSegments, font, height, size, style, value.
+      alignment (centering) may be tricky; try calculating bounding box and repositioning.
+      for more info, see: https://www.npmjs.com/package/aframe-text-geometry-component
+     -->
+    <a-entity text-geometry="value: Hello, world!; font: #exoFont;"
+      material="color: yellow; src: #pixels; repeat: 0.5 0.5;" 
+      rotation="-90 0 0">
+    </a-entity>
+
+  </a-marker>
+
+    <a-entity camera></a-entity>
+    
+</a-scene>
+</body>
 </html>
