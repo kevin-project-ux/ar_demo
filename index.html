@@ -22,7 +22,7 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      display: none;
+      /*display: none;*/
       z-index: 999;
     }
     .btn-group {
@@ -58,8 +58,7 @@
 
       <a-box id="targetBox" position="0 0.5 0" color="blue"></a-box>
 
-      <a-entity id="light-ui">
-        <!-- 開燈按鈕 -->
+      <!-- <a-entity id="light-ui">
         <a-plane class="btn" id="btn-on"
           position="-1 0.5 0"
           width="1"
@@ -68,8 +67,7 @@
           material="side: double; opacity: 0.9">
           <a-text value="on" font="fonts/Exo2Bold.fnt" align="center" color="green" position="0 0 0.01"></a-text>
         </a-plane>
-      
-        <!-- 關燈按鈕 -->
+        
         <a-plane class="btn" id="btn-off"
           position="1 0.5 0"
           width="1"
@@ -78,7 +76,7 @@
           material="side: double; opacity: 0.9">
           <a-text value="off" font="fonts/Exo2Bold.fnt" align="center" color="red" position="0 0 0.01"></a-text>
         </a-plane>
-      </a-entity>
+      </a-entity> -->
 
     </a-marker>
 
@@ -92,7 +90,7 @@
 
     </a-marker>
 
-      <a-entity camera></a-entity>
+    <a-entity camera></a-entity>
       
   </a-scene>
 </body>
