@@ -9,6 +9,11 @@
 
 <body style="margin: 0px; overflow: hidden;">
 
+<div id="ui">
+    <button onclick="alert('開燈！')">開燈</button>
+    <button onclick="alert('關燈！')">關燈</button>
+</div>
+
 <a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
 
   <a-assets>
@@ -17,7 +22,9 @@
   </a-assets>
 
   <!-- 2D text -->
-  <a-marker type="pattern" url="data/letterA.patt">
+  <a-marker id="marker" type="pattern" url="data/letterA.patt">
+
+    <a-box id="targetBox" position="0 0.5 0" color="blue"></a-box>
 
     <a-entity id="light-ui">
       <!-- 開燈按鈕 -->
@@ -27,7 +34,7 @@
         height="0.5"
         color="#00CC00"
         material="side: double; opacity: 0.9">
-        <a-text value="on" font="fonts/chin.fnt" align="center" color="green" position="0 0 0.01"></a-text>
+        <a-text value="on" font="fonts/Exo2Bold.fnt" align="center" color="green" position="0 0 0.01"></a-text>
       </a-plane>
     
       <!-- 關燈按鈕 -->
@@ -37,11 +44,9 @@
         height="0.5"
         color="#CC0000"
         material="side: double; opacity: 0.9">
-        <a-text value="off" font="fonts/chin.fnt" align="center" color="red" position="0 0 0.01"></a-text>
+        <a-text value="off" font="fonts/Exo2Bold.fnt" align="center" color="red" position="0 0 0.01"></a-text>
       </a-plane>
     </a-entity>
-
-    <!-- <a-light id="scene-light" type="point" intensity="1" position="0 2 2"></a-light> -->
     
     <!-- positioning a plane directly below text for increased visibility; need to adjust position to avoid z-fighting.  -->
 <!--     <a-plane color="white" rotation="-90 0 0" position="0 -0.25 0" width="3" material="transparent: true; opacity: 0.90"></a-plane> -->
@@ -78,14 +83,44 @@
 </a-scene>
 </body>
 <script>
-  const light = document.querySelector("#scene-light");
+    const ui = document.getElementById('ui');
+    const marker = document.getElementById('marker');
+    const targetBox = document.getElementById('targetBox');
 
-  document.querySelector("#btn-on").addEventListener("click", () => {
-    light.setAttribute("intensity", 1);
-  });
+    const cameraEl = document.querySelector('[camera]');
 
-  document.querySelector("#btn-off").addEventListener("click", () => {
-    light.setAttribute("intensity", 0);
-  });
+    // Marker狀態
+    let markerVisible = false;
+    marker.addEventListener('markerFound', () => {
+      markerVisible = true;
+      ui.style.display = 'block';
+    });
+    marker.addEventListener('markerLost', () => {
+      markerVisible = false;
+      ui.style.display = 'none';
+    });
+
+    // 每幀更新UI位置
+    const scene = document.querySelector('a-scene');
+    scene.addEventListener('renderstart', () => {
+      scene.addEventListener('render-target-loaded', () => {
+        const camera = scene.camera;
+
+        scene.renderer.setAnimationLoop(() => {
+          if (markerVisible) {
+            const boxWorldPos = new THREE.Vector3();
+            targetBox.object3D.getWorldPosition(boxWorldPos);
+
+            // 將3D座標轉換成螢幕座標
+            const projected = boxWorldPos.project(camera);
+            const x = (projected.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-projected.y * 0.5 + 0.5) * window.innerHeight;
+
+            ui.style.left = `${x}px`;
+            ui.style.top = `${y}px`;
+          }
+        });
+      });
+    });
 </script>
 </html>
