@@ -42,6 +42,7 @@
 <body>
 
   <div id="uiOverlay" class="overlay-ui">
+    <h5 class="text-center mb-3" id="title">燈光 A</h5>
     <div class="mb-2">
       狀態：<span id="statusText">關閉</span>
     </div>
@@ -115,6 +116,10 @@
     const btnOn = document.getElementById('btnOn');
     const btnOff = document.getElementById('btnOff');
     const box = document.getElementById('lightBox');
+    const marker = document.getElementById('marker');
+
+    const markers = document.querySelectorAll('a-marker');
+    const title = document.getElementById('title');
 
     const cameraEl = document.querySelector('[camera]');
 
@@ -131,13 +136,25 @@
 
     // Marker狀態
     let markerVisible = false;
-    marker.addEventListener('markerFound', () => {
-      markerVisible = true;
-      uiOverlay.style.display = 'block';
-    });
-    marker.addEventListener('markerLost', () => {
-      markerVisible = false;
-      uiOverlay.style.display = 'none';
+    markers.forEach(marker => {
+      marker.addEventListener('markerFound', () => {
+        const url = marker.getAttribute('url');
+        const match = url.match(/letter([A-Z])\.patt$/);
+        if (match) {
+          const letter = match[1];
+          statusText.textContent = `偵測到：${letter}`;
+          console.log('偵測到 Marker:', letter);
+          markerVisible = true;
+          uiOverlay.style.display = 'block';
+        }
+      });
+
+      marker.addEventListener('markerLost', () => {
+        statusText.textContent = '無';
+        console.log('Marker 遺失');
+        markerVisible = false;
+        uiOverlay.style.display = 'none';
+      });
     });
 
     // 每幀更新按鈕位置，使其跟隨 marker
@@ -145,7 +162,7 @@
       scene.addEventListener('renderstart', () => {
         scene.addEventListener('render-target-loaded', () => {
           scene.addEventListener('arframe', () => {
-            const marker = document.getElementById('myMarker');
+            
             if (marker.object3D.visible) {
               const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
               const camera = scene.camera;
