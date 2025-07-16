@@ -18,21 +18,18 @@
       overflow: hidden;
     }
     .overlay-ui {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      /*display: none;*/
-      z-index: 999;
-    }
-    .btn-group {
-      background: rgba(0,0,0,0.6);
+      position: absolute;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
       border-radius: 12px;
-      padding: 10px;
+      padding: 12px;
+      font-size: 16px;
+      pointer-events: auto;
+      min-width: 200px;
+      display: none;
     }
-    .btn {
-      font-size: 1.2rem;
-      border-radius: 8px;
+    .btn-group .btn {
+      font-size: 18px;
     }
   </style>
 </head>
@@ -40,9 +37,19 @@
 <body>
 
   <div id="uiOverlay" class="overlay-ui">
-    <div class="btn-group">
-      <button class="btn btn-success me-2" id="btnOn">開燈</button>
-      <button class="btn btn-danger" id="btnOff">關燈</button>
+    <div class="mb-2">
+      狀態：<span id="statusText">關閉</span>
+    </div>
+    <div class="mb-2">
+      電量：<span id="batteryText">85%</span>
+    </div>
+    <div class="mb-2">
+      亮度：
+      <input type="range" id="brightnessRange" min="0" max="100" value="50">
+    </div>
+    <div class="btn-group w-100">
+      <button class="btn btn-success me-2" id="btnOn">開</button>
+      <button class="btn btn-danger" id="btnOff">關</button>
     </div>
   </div>
 
@@ -56,7 +63,7 @@
     <!-- 2D text -->
     <a-marker id="marker" type="pattern" url="data/letterA.patt">
 
-      <a-box id="targetBox" position="0 0.5 0" color="blue"></a-box>
+      <a-box id="lightBox" position="0 0.5 0" color="blue"></a-box>
 
       <!-- <a-entity id="light-ui">
         <a-plane class="btn" id="btn-on"
@@ -95,11 +102,26 @@
   </a-scene>
 </body>
 <script>
-    const uiOverlay = document.getElementById('uiOverlay');
-    const marker = document.getElementById('marker');
-    const targetBox = document.getElementById('targetBox');
+    const overlay = document.getElementById('uiOverlay');
+    const statusText = document.getElementById('statusText');
+    const batteryText = document.getElementById('batteryText');
+    const brightnessRange = document.getElementById('brightnessRange');
+    const btnOn = document.getElementById('btnOn');
+    const btnOff = document.getElementById('btnOff');
+    const box = document.getElementById('lightBox');
 
     const cameraEl = document.querySelector('[camera]');
+
+    let lightOn = false;
+    let battery = 85;
+
+    // 模擬電量每 5 秒下降
+    setInterval(() => {
+      if (battery > 0) {
+        battery -= 1;
+        batteryText.innerText = `${battery}%`;
+      }
+    }, 5000);
 
     // Marker狀態
     let markerVisible = false;
@@ -112,35 +134,47 @@
       uiOverlay.style.display = 'none';
     });
 
-    // 每幀更新UI位置
+    // 每幀更新按鈕位置，使其跟隨 marker
     const scene = document.querySelector('a-scene');
     scene.addEventListener('renderstart', () => {
       scene.addEventListener('render-target-loaded', () => {
-        const camera = scene.camera;
+        scene.addEventListener('arframe', () => {
+          const marker = document.getElementById('marker');
+          if (marker.object3D.visible) {
+            const position = marker.object3D.position;
+            const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
 
-        scene.renderer.setAnimationLoop(() => {
-          if (markerVisible) {
-            const boxWorldPos = new THREE.Vector3();
-            targetBox.object3D.getWorldPosition(boxWorldPos);
+            // 將 3D 座標轉換為螢幕座標
+            const camera = scene.camera;
+            const vector = worldPosition.clone().project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
 
-            // 將3D座標轉換成螢幕座標
-            const projected = boxWorldPos.project(camera);
-            const x = (projected.x * 0.5 + 0.5) * window.innerWidth;
-            const y = (-projected.y * 0.5 + 0.5) * window.innerHeight;
-
-            uiOverlay.style.left = `${x}px`;
-            uiOverlay.style.top = `${y}px`;
+            btn.style.left = `${x - btn.offsetWidth / 2}px`;
+            btn.style.top = `${y - btn.offsetHeight - 20}px`;
+            btn.style.display = 'block';
+          } else {
+            btn.style.display = 'none';
           }
         });
       });
     });
 
-    document.getElementById('btnOn').addEventListener('click', () => {
-      alert('燈已開啟');
+    btnOn.addEventListener('click', () => {
+      lightOn = true;
+      statusText.innerText = '開啟';
+      box.setAttribute('color', 'yellow');
     });
 
-    document.getElementById('btnOff').addEventListener('click', () => {
-      alert('燈已關閉');
+    btnOff.addEventListener('click', () => {
+      lightOn = false;
+      statusText.innerText = '關閉';
+      box.setAttribute('color', 'blue');
+    });
+
+    brightnessRange.addEventListener('input', (e) => {
+      const brightness = e.target.value;
+      box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
     });
 </script>
 </html>
