@@ -7,105 +7,97 @@
 <!-- support 3D text -->
 <script src="js/aframe-text-geometry-component.min.js"></script>
 
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <head>
   <style>
-    body {
+    body, html {
       margin: 0;
+      padding: 0;
       overflow: hidden;
     }
-    #ui {
-      position: absolute;
+    .overlay-ui {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       display: none;
       z-index: 999;
     }
-    button {
-      padding: 10px 16px;
-      font-size: 16px;
-      background: #ff4444;
-      color: white;
-      border: none;
-      border-radius: 6px;
+    .btn-group {
+      background: rgba(0,0,0,0.6);
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .btn {
+      font-size: 1.2rem;
+      border-radius: 8px;
     }
   </style>
 </head>
 
-<body style="margin: 0px; overflow: hidden;">
+<body>
 
-<div id="ui">
-    <button onclick="alert('開燈！')">開燈</button>
-    <button onclick="alert('關燈！')">關燈</button>
-</div>
+  <div id="uiOverlay" class="overlay-ui">
+    <div class="btn-group">
+      <button class="btn btn-success me-2" id="btnOn">開燈</button>
+      <button class="btn btn-danger" id="btnOff">關燈</button>
+    </div>
+  </div>
 
-<a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
+  <a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
 
-  <a-assets>
-    <a-asset-item id="exoFont" src="fonts/exoBlack.typeface.json"></a-asset-item>
-    <img id="pixels" src="images/pixels.png" />
-  </a-assets>
+    <a-assets>
+      <a-asset-item id="exoFont" src="fonts/exoBlack.typeface.json"></a-asset-item>
+      <img id="pixels" src="images/pixels.png" />
+    </a-assets>
 
-  <!-- 2D text -->
-  <a-marker id="marker" type="pattern" url="data/letterA.patt">
+    <!-- 2D text -->
+    <a-marker id="marker" type="pattern" url="data/letterA.patt">
 
-    <a-box id="targetBox" position="0 0.5 0" color="blue"></a-box>
+      <a-box id="targetBox" position="0 0.5 0" color="blue"></a-box>
 
-    <a-entity id="light-ui">
-      <!-- 開燈按鈕 -->
-      <a-plane class="btn" id="btn-on"
-        position="-1 0.5 0"
-        width="1"
-        height="0.5"
-        color="#00CC00"
-        material="side: double; opacity: 0.9">
-        <a-text value="on" font="fonts/Exo2Bold.fnt" align="center" color="green" position="0 0 0.01"></a-text>
-      </a-plane>
-    
-      <!-- 關燈按鈕 -->
-      <a-plane class="btn" id="btn-off"
-        position="1 0.5 0"
-        width="1"
-        height="0.5"
-        color="#CC0000"
-        material="side: double; opacity: 0.9">
-        <a-text value="off" font="fonts/Exo2Bold.fnt" align="center" color="red" position="0 0 0.01"></a-text>
-      </a-plane>
-    </a-entity>
-    
-    <!-- positioning a plane directly below text for increased visibility; need to adjust position to avoid z-fighting.  -->
-<!--     <a-plane color="white" rotation="-90 0 0" position="0 -0.25 0" width="3" material="transparent: true; opacity: 0.90"></a-plane> -->
+      <a-entity id="light-ui">
+        <!-- 開燈按鈕 -->
+        <a-plane class="btn" id="btn-on"
+          position="-1 0.5 0"
+          width="1"
+          height="0.5"
+          color="#00CC00"
+          material="side: double; opacity: 0.9">
+          <a-text value="on" font="fonts/Exo2Bold.fnt" align="center" color="green" position="0 0 0.01"></a-text>
+        </a-plane>
+      
+        <!-- 關燈按鈕 -->
+        <a-plane class="btn" id="btn-off"
+          position="1 0.5 0"
+          width="1"
+          height="0.5"
+          color="#CC0000"
+          material="side: double; opacity: 0.9">
+          <a-text value="off" font="fonts/Exo2Bold.fnt" align="center" color="red" position="0 0 0.01"></a-text>
+        </a-plane>
+      </a-entity>
 
-    <!-- for more properties, see https://github.com/aframevr/aframe/blob/master/docs/components/text.md -->
-<!--     <a-text value="Hello, world!" font="fonts/Exo2Bold.fnt" color="red" rotation="-90 0 0" align="center" scale="2 2 2"></a-text> -->
-    
-    <!-- positioning a second copy to attempt drop-shadow effect; need to adjust position to avoid z-fighting -->
-    <!-- <a-text value="Hello, world!" font="fonts/Exo2Bold.fnt" color="black" rotation="-90 0 0" align="center" scale="2 2 2" position="0.01 -0.2 0"></a-text> -->
+    </a-marker>
 
-    
-    <!-- avoiding z-fighting is difficult; may want to render canvas to text instead -->
+    <!-- 3D text -->
+    <a-marker type="pattern" url="data/letterB.patt">
 
-  </a-marker>
+      <a-entity text-geometry="value: Hello, world!; font: #exoFont;"
+        material="color: yellow; src: #pixels; repeat: 0.5 0.5;" 
+        rotation="-90 0 0">
+      </a-entity>
 
-  <!-- 3D text -->
-  <a-marker type="pattern" url="data/letterB.patt">
+    </a-marker>
 
-    <!-- 
-      using aframe-text-geometry component
-      can set: bevelSize, bevelThickness, curveSegments, font, height, size, style, value.
-      alignment (centering) may be tricky; try calculating bounding box and repositioning.
-      for more info, see: https://www.npmjs.com/package/aframe-text-geometry-component
-     -->
-    <a-entity text-geometry="value: Hello, world!; font: #exoFont;"
-      material="color: yellow; src: #pixels; repeat: 0.5 0.5;" 
-      rotation="-90 0 0">
-    </a-entity>
-
-  </a-marker>
-
-    <a-entity camera></a-entity>
-    
-</a-scene>
+      <a-entity camera></a-entity>
+      
+  </a-scene>
 </body>
 <script>
-    const ui = document.getElementById('ui');
+    const uiOverlay = document.getElementById('uiOverlay');
     const marker = document.getElementById('marker');
     const targetBox = document.getElementById('targetBox');
 
@@ -115,11 +107,11 @@
     let markerVisible = false;
     marker.addEventListener('markerFound', () => {
       markerVisible = true;
-      ui.style.display = 'block';
+      uiOverlay.style.display = 'block';
     });
     marker.addEventListener('markerLost', () => {
       markerVisible = false;
-      ui.style.display = 'none';
+      uiOverlay.style.display = 'none';
     });
 
     // 每幀更新UI位置
@@ -138,11 +130,19 @@
             const x = (projected.x * 0.5 + 0.5) * window.innerWidth;
             const y = (-projected.y * 0.5 + 0.5) * window.innerHeight;
 
-            ui.style.left = `${x}px`;
-            ui.style.top = `${y}px`;
+            uiOverlay.style.left = `${x}px`;
+            uiOverlay.style.top = `${y}px`;
           }
         });
       });
+    });
+
+    document.getElementById('btnOn').addEventListener('click', () => {
+      alert('燈已開啟');
+    });
+
+    document.getElementById('btnOff').addEventListener('click', () => {
+      alert('燈已關閉');
     });
 </script>
 </html>
