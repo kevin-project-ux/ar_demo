@@ -42,7 +42,7 @@
 <body>
 
   <div id="uiOverlay" class="overlay-ui">
-    <h5 class="text-center mb-3" id="title">燈光 A</h5>
+    <h5 class="text-center mb-3" id="title">無</h5>
     <div class="mb-2">
       狀態：<span id="statusText">關閉</span>
     </div>
@@ -141,8 +141,8 @@
         const match = url.match(/letter([A-Z])\.patt$/);
         if (match) {
           const letter = match[1];
-          statusText.textContent = `偵測到：${letter}`;
-          console.log('偵測到 Marker:', letter);
+          statusText.textContent = `燈光 ${letter}`;
+          // console.log('偵測到 Marker:', letter);
           markerVisible = true;
           uiOverlay.style.display = 'block';
         }
@@ -150,7 +150,7 @@
 
       marker.addEventListener('markerLost', () => {
         statusText.textContent = '無';
-        console.log('Marker 遺失');
+        // console.log('Marker 遺失');
         markerVisible = false;
         uiOverlay.style.display = 'none';
       });
