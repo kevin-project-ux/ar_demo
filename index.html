@@ -68,18 +68,26 @@
     </div>
 
     <!-- 控制按鈕 -->
-    <div class="btn-group w-100 mb-2">
+    <!-- <div class="btn-group w-100 mb-2">
       <button class="btn btn-success me-2" id="btnOn">開</button>
       <button class="btn btn-danger" id="btnOff">關</button>
-    </div>
+    </div> -->
+    <div class="d-flex align-items-center justify-content-between mb-3 gap-3">
 
-    <!-- 語音控制 -->
-    <div class="text-center">
-      <button id="voiceBtn" class="btn btn-outline-light rounded-circle" style="width:45px;height:45px;">
-        <i class="fas fa-microphone " style="font-size:1.5rem;"></i>
-      </button>
-      <div id="voiceStatus" class="small mt-1 text-muted">語音關閉</div>
+      <div class="form-check form-switch mb-0">
+        <input class="form-check-input" type="checkbox" id="lightSwitch">
+        <label class="form-check-label" for="lightSwitch">開/關</label>
+      </div>
+
+      <!-- 語音控制 -->
+      <div class="text-center">
+        <button id="voiceBtn" class="btn btn-outline-light rounded-circle" style="width:45px;height:45px;">
+          <i class="fas fa-microphone " style="font-size:1.5rem;"></i>
+        </button>
+        <div id="voiceStatus" class="small mt-1 text-light">語音關閉</div>
+      </div>
     </div>
+    
   </div>
 
   <a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
@@ -93,26 +101,6 @@
     <a-marker id="marker" type="pattern" url="data/letterA.patt">
 
       <a-box id="lightBox" position="0 0.5 0" color="gray"></a-box>
-
-      <!-- <a-entity id="light-ui">
-        <a-plane class="btn" id="btn-on"
-          position="-1 0.5 0"
-          width="1"
-          height="0.5"
-          color="#00CC00"
-          material="side: double; opacity: 0.9">
-          <a-text value="on" font="fonts/Exo2Bold.fnt" align="center" color="green" position="0 0 0.01"></a-text>
-        </a-plane>
-        
-        <a-plane class="btn" id="btn-off"
-          position="1 0.5 0"
-          width="1"
-          height="0.5"
-          color="#CC0000"
-          material="side: double; opacity: 0.9">
-          <a-text value="off" font="fonts/Exo2Bold.fnt" align="center" color="red" position="0 0 0.01"></a-text>
-        </a-plane>
-      </a-entity> -->
 
     </a-marker>
 
@@ -135,9 +123,10 @@
     const statusText = document.getElementById('statusText');
     const batteryText = document.getElementById('batteryText');
     const brightnessRange = document.getElementById('brightnessRange');
-    const btnOn = document.getElementById('btnOn');
-    const btnOff = document.getElementById('btnOff');
+    // const btnOn = document.getElementById('btnOn');
+    // const btnOff = document.getElementById('btnOff');
     const box = document.getElementById('lightBox');
+    const lightSwitch = document.getElementById('lightSwitch');
 
     const markers = document.querySelectorAll('a-marker');
     const title = document.getElementById('title');
@@ -180,26 +169,42 @@
 
     // 每幀更新按鈕位置，使其跟隨 marker
     const scene = document.querySelector('a-scene');
-      scene.addEventListener('renderstart', () => {
-        scene.addEventListener('render-target-loaded', () => {
-          scene.addEventListener('arframe', () => {
-            const marker = document.getElementById('marker');
-            if (marker.object3D.visible) {
-              const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
-              const camera = scene.camera;
-              const vector = worldPosition.clone().project(camera);
-              const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-              const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+    scene.addEventListener('renderstart', () => {
+      scene.addEventListener('render-target-loaded', () => {
+        scene.addEventListener('arframe', () => {
+          const marker = document.getElementById('marker');
+          if (marker.object3D.visible) {
+            const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
+            const camera = scene.camera;
+            const vector = worldPosition.clone().project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
 
-              uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
-              uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
-              uiOverlay.style.display = 'block';
-            } else {
-              uiOverlay.style.display = 'none';
-            }
-          });
+            uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
+            uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
+            uiOverlay.style.display = 'block';
+          } else {
+            uiOverlay.style.display = 'none';
+          }
         });
       });
+    });
+
+    lightSwitch.addEventListener('change', function() {
+      if (this.checked) {
+        // console.log('燈光：開');
+        lightOn = true;
+        statusText.innerText = '開啟';
+        box.setAttribute('color', 'yellow');
+        // 這裡可以呼叫開燈功能
+      } else {
+        // console.log('燈光：關');
+        lightOn = false;
+        statusText.innerText = '關閉';
+        box.setAttribute('color', 'gray');
+        // 這裡可以呼叫關燈功能
+      }
+    });
 
     btnOn.addEventListener('click', () => {
       lightOn = true;
@@ -240,8 +245,8 @@
       console.log('語音指令:', transcript);
       document.getElementById('voiceStatus').textContent = `辨識: ${transcript}`;
 
-      if (transcript.includes('開')) { btnOn.click();  } 
-      if (transcript.includes('關')) { btnOff.click(); }
+      if (transcript.includes('開')) { lightOn = true;  statusText.innerText = '開啟'; box.setAttribute('color', 'yellow'); } 
+      if (transcript.includes('關')) { lightOn = false; statusText.innerText = '關閉'; box.setAttribute('color', 'gray');   }
 
       // 語音控制亮度
       if (transcript.includes('亮度')) {
