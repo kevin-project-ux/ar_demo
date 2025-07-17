@@ -51,7 +51,7 @@
       狀態：<span id="statusText">關閉</span>
     </div>
     <div class="mb-2">
-      電量：<span id="batteryText">85%</span>
+      電量：<span id="batteryText">0%</span>
     </div>
     <div class="mb-2">
       亮度：
@@ -131,7 +131,7 @@
 
     // 模擬電量每 5 秒上升
     setInterval(() => {
-      if (battery > 0) {
+      if (battery >= 0) {
         battery += 1;
         batteryText.innerText = `${battery}%`;
       }
