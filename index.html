@@ -10,6 +10,8 @@
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" >
+
 <head>
   <style>
     body, html {
@@ -47,20 +49,36 @@
 
   <div id="uiOverlay" class="overlay-ui">
     <h5 class="text-center mb-3" id="title">無</h5>
+
+    <!-- 狀態 -->
     <div class="mb-2">
       狀態：<span id="statusText">關閉</span>
     </div>
+
+    <!-- 電量 -->
     <div class="mb-2">
       電量：<span id="batteryText">0%</span>
     </div>
+
+    <!-- 亮度 -->
     <div class="mb-2">
       亮度：
       <input type="range" id="brightnessRange" min="0" max="100" value="50">
       <span id="brightnessValue">50%</span>
     </div>
-    <div class="btn-group w-100">
+
+    <!-- 控制按鈕 -->
+    <div class="btn-group w-100 mb-2">
       <button class="btn btn-success me-2" id="btnOn">開</button>
       <button class="btn btn-danger" id="btnOff">關</button>
+    </div>
+
+    <!-- 語音控制 -->
+    <div class="text-center">
+      <button id="voiceBtn" class="btn btn-outline-primary rounded-circle" style="width:45px;height:45px;">
+        <i class="fas fa-microphone " style="font-size:1.5rem;"></i>
+      </button>
+      <div id="voiceStatus" class="small mt-1 text-muted">語音關閉</div>
     </div>
   </div>
 
@@ -74,7 +92,7 @@
     <!-- 2D text -->
     <a-marker id="marker" type="pattern" url="data/letterA.patt">
 
-      <a-box id="lightBox" position="0 0.5 0" color="blue"></a-box>
+      <a-box id="lightBox" position="0 0.5 0" color="gray"></a-box>
 
       <!-- <a-entity id="light-ui">
         <a-plane class="btn" id="btn-on"
