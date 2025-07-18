@@ -4,9 +4,6 @@
 <script src="js/aframe.min.js"></script>
 <script src="js/aframe-ar.js"></script>
 
-<!-- support 3D text -->
-<script src="js/aframe-text-geometry-component.min.js"></script>
-
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -97,21 +94,14 @@
       <img id="pixels" src="images/pixels.png" />
     </a-assets>
 
-    <!-- 2D text -->
-    <a-marker id="marker" type="pattern" url="data/letterA.patt">
-
-      <a-box id="lightBox" position="0 0.5 0" color="gray"></a-box>
-
+    <!-- A Marker -->
+    <a-marker type="pattern" url="data/letterA.patt">
+      <a-box class="lightBox" position="0 0.5 0" color="gray"></a-box>
     </a-marker>
 
-    <!-- 3D text -->
+    <!-- B Marker -->
     <a-marker type="pattern" url="data/letterB.patt">
-
-      <a-entity text-geometry="value: Hello, world!; font: #exoFont;"
-        material="color: yellow; src: #pixels; repeat: 0.5 0.5;" 
-        rotation="-90 0 0">
-      </a-entity>
-
+      <a-box class="lightBox" position="0 0.5 0" color="gray"></a-box>
     </a-marker>
 
     <a-entity camera></a-entity>
@@ -123,9 +113,8 @@
     const statusText = document.getElementById('statusText');
     const batteryText = document.getElementById('batteryText');
     const brightnessRange = document.getElementById('brightnessRange');
-    // const btnOn = document.getElementById('btnOn');
-    // const btnOff = document.getElementById('btnOff');
-    const box = document.getElementById('lightBox');
+    const brightnessValue = document.getElementById('brightnessValue');
+    // const box = document.getElementById('lightBox');
     const lightSwitch = document.getElementById('lightSwitch');
 
     const markers = document.querySelectorAll('a-marker');
@@ -150,12 +139,84 @@
       marker.addEventListener('markerFound', () => {
         const url = marker.getAttribute('url');
         const match = url.match(/letter([A-Z])\.patt$/);
+        const box = marker.querySelector('.lightBox');
         if (match) {
           const letter = match[1];
           title.textContent = `燈光 ${letter}`;
           // console.log('偵測到 Marker:', letter);
           markerVisible = true;
           uiOverlay.style.display = 'block';
+
+          lightSwitch.addEventListener('change', function() {
+
+            if (this.checked) {
+              lightOn = true;
+              statusText.innerText = '開啟';
+              box.setAttribute('color', 'yellow');
+            } else {
+              lightOn = false;
+              statusText.innerText = '關閉';
+              box.setAttribute('color', 'gray');
+            }
+          });
+
+          brightnessRange.addEventListener('input', (e) => {
+            const brightness = e.target.value;
+            brightnessValue.innerText = `${brightness}%`;
+            box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
+          });
+
+          let recognizing = false;
+          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+          recognition.lang = 'zh-TW';
+
+          document.getElementById('voiceBtn').addEventListener('click', () => {
+            if (!recognizing) {
+              recognition.start();
+              recognizing = true;
+              document.getElementById('voiceStatus').textContent = '聆聽中...';
+            } else {
+              recognition.stop();
+              recognizing = false;
+              document.getElementById('voiceStatus').textContent = '語音關閉';
+            }
+          });
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.trim();
+            console.log('語音指令:', transcript);
+            document.getElementById('voiceStatus').textContent = `辨識: ${transcript}`;
+
+            if (transcript.includes('開')) { lightOn = true;  statusText.innerText = '開啟'; box.setAttribute('color', 'yellow'); } 
+            if (transcript.includes('關')) { lightOn = false; statusText.innerText = '關閉'; box.setAttribute('color', 'gray');   }
+
+            // 語音控制亮度
+            if (transcript.includes('亮度')) {
+              let newBrightness = null;
+
+              // 擷取數字 (例: "亮度50" 或 "亮度 五十")
+              const numMatch = transcript.match(/\d+/);
+              if (numMatch) {
+                newBrightness = parseInt(numMatch[0]);
+                if (newBrightness > 100) newBrightness = 100;
+                if (newBrightness < 0) newBrightness = 0;
+              } else {
+                // 特殊關鍵字
+                if (transcript.includes('最大')) {
+                  newBrightness = 100;
+                } else if (transcript.includes('最小') || transcript.includes('最低')) {
+                  newBrightness = 0;
+                } else if (transcript.includes('一半') || transcript.includes('五十')) {
+                  newBrightness = 50;
+                }
+              }
+
+              if (newBrightness !== null) { 
+                brightnessRange.value = newBrightness;
+                brightnessValue.innerText = `${newBrightness}%`; 
+              }
+            }
+          };
         }
       });
 
@@ -168,43 +229,27 @@
     });
 
     // 每幀更新按鈕位置，使其跟隨 marker
-    const scene = document.querySelector('a-scene');
-    scene.addEventListener('renderstart', () => {
-      scene.addEventListener('render-target-loaded', () => {
-        scene.addEventListener('arframe', () => {
-          const marker = document.getElementById('marker');
-          if (marker.object3D.visible) {
-            const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
-            const camera = scene.camera;
-            const vector = worldPosition.clone().project(camera);
-            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+    // const scene = document.querySelector('a-scene');
+    // scene.addEventListener('renderstart', () => {
+    //   scene.addEventListener('render-target-loaded', () => {
+    //     scene.addEventListener('arframe', () => {
+    //       const marker = document.getElementById('marker');
+    //       if (marker.object3D.visible) {
+    //         const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
+    //         const camera = scene.camera;
+    //         const vector = worldPosition.clone().project(camera);
+    //         const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+    //         const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
 
-            uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
-            uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
-            uiOverlay.style.display = 'block';
-          } else {
-            uiOverlay.style.display = 'none';
-          }
-        });
-      });
-    });
-
-    lightSwitch.addEventListener('change', function() {
-      if (this.checked) {
-        // console.log('燈光：開');
-        lightOn = true;
-        statusText.innerText = '開啟';
-        box.setAttribute('color', 'yellow');
-        // 這裡可以呼叫開燈功能
-      } else {
-        // console.log('燈光：關');
-        lightOn = false;
-        statusText.innerText = '關閉';
-        box.setAttribute('color', 'gray');
-        // 這裡可以呼叫關燈功能
-      }
-    });
+    //         uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
+    //         uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
+    //         uiOverlay.style.display = 'block';
+    //       } else {
+    //         uiOverlay.style.display = 'none';
+    //       }
+    //     });
+    //   });
+    // });
 
     // btnOn.addEventListener('click', () => {
     //   lightOn = true;
@@ -217,63 +262,5 @@
     //   statusText.innerText = '關閉';
     //   box.setAttribute('color', 'gray');
     // });
-
-    brightnessRange.addEventListener('input', (e) => {
-      const brightness = e.target.value;
-      brightnessValue.innerText = `${brightness}%`;
-      box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
-    });
-
-    let recognizing = false;
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'zh-TW';
-
-    document.getElementById('voiceBtn').addEventListener('click', () => {
-      if (!recognizing) {
-        recognition.start();
-        recognizing = true;
-        document.getElementById('voiceStatus').textContent = '聆聽中...';
-      } else {
-        recognition.stop();
-        recognizing = false;
-        document.getElementById('voiceStatus').textContent = '語音關閉';
-      }
-    });
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript.trim();
-      console.log('語音指令:', transcript);
-      document.getElementById('voiceStatus').textContent = `辨識: ${transcript}`;
-
-      if (transcript.includes('開')) { lightOn = true;  statusText.innerText = '開啟'; box.setAttribute('color', 'yellow'); } 
-      if (transcript.includes('關')) { lightOn = false; statusText.innerText = '關閉'; box.setAttribute('color', 'gray');   }
-
-      // 語音控制亮度
-      if (transcript.includes('亮度')) {
-        let newBrightness = null;
-
-        // 擷取數字 (例: "亮度50" 或 "亮度 五十")
-        const numMatch = transcript.match(/\d+/);
-        if (numMatch) {
-          newBrightness = parseInt(numMatch[0]);
-          if (newBrightness > 100) newBrightness = 100;
-          if (newBrightness < 0) newBrightness = 0;
-        } else {
-          // 特殊關鍵字
-          if (transcript.includes('最大')) {
-            newBrightness = 100;
-          } else if (transcript.includes('最小') || transcript.includes('最低')) {
-            newBrightness = 0;
-          } else if (transcript.includes('一半') || transcript.includes('五十')) {
-            newBrightness = 50;
-          }
-        }
-
-        if (newBrightness !== null) { 
-          brightnessRange.value = newBrightness;
-          brightnessValue.innerText = `${newBrightness}%`; 
-        }
-      }
-    };
 </script>
 </html>
