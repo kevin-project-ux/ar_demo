@@ -135,88 +135,18 @@
 
     // Marker狀態
     let markerVisible = false;
+    let box;
     markers.forEach(marker => {
       marker.addEventListener('markerFound', () => {
         const url = marker.getAttribute('url');
         const match = url.match(/letter([A-Z])\.patt$/);
-        const box = marker.querySelector('.lightBox');
+        box = marker.querySelector('.lightBox');
         if (match) {
           const letter = match[1];
           title.textContent = `燈光 ${letter}`;
           // console.log('偵測到 Marker:', letter);
           markerVisible = true;
           uiOverlay.style.display = 'block';
-
-          lightSwitch.addEventListener('change', function() {
-
-            if (this.checked) {
-              lightOn = true;
-              statusText.innerText = '開啟';
-              box.setAttribute('color', 'yellow');
-            } else {
-              lightOn = false;
-              statusText.innerText = '關閉';
-              box.setAttribute('color', 'gray');
-            }
-          });
-
-          brightnessRange.addEventListener('input', (e) => {
-            const brightness = e.target.value;
-            brightnessValue.innerText = `${brightness}%`;
-            box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
-          });
-
-          let recognizing = false;
-          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-          recognition.lang = 'zh-TW';
-
-          document.getElementById('voiceBtn').addEventListener('click', () => {
-            if (!recognizing) {
-              recognition.start();
-              recognizing = true;
-              document.getElementById('voiceStatus').textContent = '聆聽中...';
-            } else {
-              recognition.stop();
-              recognizing = false;
-              document.getElementById('voiceStatus').textContent = '語音關閉';
-            }
-          });
-
-          recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript.trim();
-            console.log('語音指令:', transcript);
-            document.getElementById('voiceStatus').textContent = `辨識: ${transcript}`;
-
-            if (transcript.includes('開')) { lightOn = true;  statusText.innerText = '開啟'; box.setAttribute('color', 'yellow'); } 
-            if (transcript.includes('關')) { lightOn = false; statusText.innerText = '關閉'; box.setAttribute('color', 'gray');   }
-
-            // 語音控制亮度
-            if (transcript.includes('亮度')) {
-              let newBrightness = null;
-
-              // 擷取數字 (例: "亮度50" 或 "亮度 五十")
-              const numMatch = transcript.match(/\d+/);
-              if (numMatch) {
-                newBrightness = parseInt(numMatch[0]);
-                if (newBrightness > 100) newBrightness = 100;
-                if (newBrightness < 0) newBrightness = 0;
-              } else {
-                // 特殊關鍵字
-                if (transcript.includes('最大')) {
-                  newBrightness = 100;
-                } else if (transcript.includes('最小') || transcript.includes('最低')) {
-                  newBrightness = 0;
-                } else if (transcript.includes('一半') || transcript.includes('五十')) {
-                  newBrightness = 50;
-                }
-              }
-
-              if (newBrightness !== null) { 
-                brightnessRange.value = newBrightness;
-                brightnessValue.innerText = `${newBrightness}%`; 
-              }
-            }
-          };
         }
       });
 
@@ -251,6 +181,19 @@
     //   });
     // });
 
+    lightSwitch.addEventListener('change', function() {
+
+      if (this.checked) {
+        lightOn = true;
+        statusText.innerText = '開啟';
+        box.setAttribute('color', 'yellow');
+      } else {
+        lightOn = false;
+        statusText.innerText = '關閉';
+        box.setAttribute('color', 'gray');
+      }
+    });
+
     // btnOn.addEventListener('click', () => {
     //   lightOn = true;
     //   statusText.innerText = '開啟';
@@ -262,5 +205,63 @@
     //   statusText.innerText = '關閉';
     //   box.setAttribute('color', 'gray');
     // });
+
+    brightnessRange.addEventListener('input', (e) => {
+      const brightness = e.target.value;
+      brightnessValue.innerText = `${brightness}%`;
+      box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
+    });
+
+    let recognizing = false;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'zh-TW';
+
+    document.getElementById('voiceBtn').addEventListener('click', () => {
+      if (!recognizing) {
+        recognition.start();
+        recognizing = true;
+        document.getElementById('voiceStatus').textContent = '聆聽中...';
+      } else {
+        recognition.stop();
+        recognizing = false;
+        document.getElementById('voiceStatus').textContent = '語音關閉';
+      }
+    });
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.trim();
+      console.log('語音指令:', transcript);
+      document.getElementById('voiceStatus').textContent = `辨識: ${transcript}`;
+
+      if (transcript.includes('開')) { lightOn = true;  statusText.innerText = '開啟'; box.setAttribute('color', 'yellow'); } 
+      if (transcript.includes('關')) { lightOn = false; statusText.innerText = '關閉'; box.setAttribute('color', 'gray');   }
+
+      // 語音控制亮度
+      if (transcript.includes('亮度')) {
+        let newBrightness = null;
+
+        // 擷取數字 (例: "亮度50" 或 "亮度 五十")
+        const numMatch = transcript.match(/\d+/);
+        if (numMatch) {
+          newBrightness = parseInt(numMatch[0]);
+          if (newBrightness > 100) newBrightness = 100;
+          if (newBrightness < 0) newBrightness = 0;
+        } else {
+          // 特殊關鍵字
+          if (transcript.includes('最大')) {
+            newBrightness = 100;
+          } else if (transcript.includes('最小') || transcript.includes('最低')) {
+            newBrightness = 0;
+          } else if (transcript.includes('一半') || transcript.includes('五十')) {
+            newBrightness = 50;
+          }
+        }
+
+        if (newBrightness !== null) { 
+          brightnessRange.value = newBrightness;
+          brightnessValue.innerText = `${newBrightness}%`; 
+        }
+      }
+    };
 </script>
 </html>
