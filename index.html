@@ -216,6 +216,11 @@
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'zh-TW';
 
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Speech recognition not supported in this browser.");
+      return;
+    }
+
     document.getElementById('voiceBtn').addEventListener('click', () => {
       if (!recognizing) {
         recognition.start();
