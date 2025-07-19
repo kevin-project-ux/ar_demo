@@ -1,44 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<title>語音轉文字範例</title>
+  <meta charset="UTF-8">
+  <title>錄音回放範例</title>
 </head>
 <body>
-  <button id="startButton">開始語音輸入</button>
-  <div id="result"></div>
+  <h1>錄音範例</h1>
+  <button id="startBtn">開始錄音</button>
+  <button id="stopBtn" disabled>停止錄音</button>
+  <audio id="player" controls></audio>
 
-  <script>
-    const startButton = document.getElementById('startButton');
-    const resultDiv = document.getElementById('result');
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+<script>
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const player = document.getElementById('player');
 
-    recognition.lang = 'zh-TW';
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+let mediaRecorder;
+let audioChunks = [];
 
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      resultDiv.textContent = '您說的是：' + transcript;
-    };
+startBtn.addEventListener('click', async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  audioChunks = [];
 
-    recognition.onerror = (event) => {
-      resultDiv.textContent = '錯誤：' + event.error;
-    };
+  mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
-    recognition.onnomatch = (event) => {
-      resultDiv.textContent = "未偵測到語音";
-    }
+  mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const audioURL = URL.createObjectURL(audioBlob);
+    player.src = audioURL; // 直接設定 audio 播放
+  };
 
-    recognition.onspeechend = () => {
-      recognition.stop();
-    }
+  mediaRecorder.start();
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+});
 
-    startButton.addEventListener('click', () => {
-      recognition.start();
-      resultDiv.textContent = '請開始說話...';
-    });
-  </script>
+stopBtn.addEventListener('click', () => {
+  mediaRecorder.stop();
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+});
+</script>
 </body>
 </html>
