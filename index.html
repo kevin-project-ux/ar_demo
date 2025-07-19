@@ -215,6 +215,8 @@
     let recognizing = false;
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'zh-TW';
+    recognition.continuous = true;
+    recognition.interimResults = false;
 
     document.getElementById('voiceBtn').addEventListener('click', () => {
       if (!recognizing) {
@@ -229,7 +231,8 @@
     });
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript.trim();
+      // const transcript = event.results[0][0].transcript.trim();
+      let transcript = event.results[event.results.length - 1][0].transcript.trim();
       console.log('語音指令:', transcript);
       document.getElementById('voiceStatus').textContent = `辨識: ${transcript}`;
 
@@ -262,6 +265,11 @@
           brightnessValue.innerText = `${newBrightness}%`; 
         }
       }
+    };
+
+    recognition.onend = () => {
+      recognizing = false;
+      document.getElementById('voiceStatus').textContent = '語音停止，可以再次啟動';
     };
 </script>
 </html>
