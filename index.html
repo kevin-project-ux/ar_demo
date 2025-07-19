@@ -267,9 +267,10 @@
       }
     };
 
-    // recognition.onend = () => {
-    //   recognizing = false;
-    //   document.getElementById('voiceStatus').textContent = '語音停止，可以再次啟動';
-    // };
+    recognition.onend = () => {
+      recognizing = false;
+      recognition.start();
+      document.getElementById('voiceStatus').textContent = '聆聽中...';
+    };
 </script>
 </html>
