@@ -17,8 +17,8 @@
       overflow: hidden;
     }
     .overlay-ui {
-      /*position: absolute;*/
-      position: fixed;
+      position: absolute;
+/*      position: fixed;*/
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
@@ -159,27 +159,27 @@
     });
 
     // 每幀更新按鈕位置，使其跟隨 marker
-    // const scene = document.querySelector('a-scene');
-    // scene.addEventListener('renderstart', () => {
-    //   scene.addEventListener('render-target-loaded', () => {
-    //     scene.addEventListener('arframe', () => {
-    //       const marker = document.getElementById('marker');
-    //       if (marker.object3D.visible) {
-    //         const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
-    //         const camera = scene.camera;
-    //         const vector = worldPosition.clone().project(camera);
-    //         const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-    //         const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+    const scene = document.querySelector('a-scene');
+    scene.addEventListener('renderstart', () => {
+      scene.addEventListener('render-target-loaded', () => {
+        scene.addEventListener('arframe', () => {
+          const marker = document.getElementById('marker');
+          if (marker.object3D.visible) {
+            const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
+            const camera = scene.camera;
+            const vector = worldPosition.clone().project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
 
-    //         uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
-    //         uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
-    //         uiOverlay.style.display = 'block';
-    //       } else {
-    //         uiOverlay.style.display = 'none';
-    //       }
-    //     });
-    //   });
-    // });
+            uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
+            uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
+            uiOverlay.style.display = 'block';
+          } else {
+            uiOverlay.style.display = 'none';
+          }
+        });
+      });
+    });
 
     lightSwitch.addEventListener('change', function() {
 
