@@ -19,8 +19,8 @@
     .overlay-ui {
       position: absolute;
 /*      position: fixed;*/
-      bottom: 20px;
-      left: 50%;
+/*      bottom: 20px;*/
+/*      left: 50%;*/
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.6);
       color: #fff;
@@ -157,27 +157,29 @@
         uiOverlay.style.display = 'none';
       });
 
-      // 每幀更新按鈕位置，使其跟隨 marker
-      const scene = document.querySelector('a-scene');
-      scene.addEventListener('renderstart', () => {
-        scene.addEventListener('render-target-loaded', () => {
-          scene.addEventListener('arframe', () => {
-            if (marker.object3D.visible) {
-              const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
-              const camera = scene.camera;
-              const vector = worldPosition.clone().project(camera);
-              const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-              const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
 
-              uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
-              uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
-              uiOverlay.style.display = 'block';
-            } else {
-              uiOverlay.style.display = 'none';
-            }
-          });
-        });
-      });
+      updateUIPosition(marker);
+      // 每幀更新按鈕位置，使其跟隨 marker
+      // const scene = document.querySelector('a-scene');
+      // scene.addEventListener('renderstart', () => {
+      //   scene.addEventListener('render-target-loaded', () => {
+      //     scene.addEventListener('arframe', () => {
+      //       if (marker.object3D.visible) {
+      //         const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
+      //         const camera = scene.camera;
+      //         const vector = worldPosition.clone().project(camera);
+      //         const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+      //         const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+
+      //         uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
+      //         uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
+      //         uiOverlay.style.display = 'block';
+      //       } else {
+      //         uiOverlay.style.display = 'none';
+      //       }
+      //     });
+      //   });
+      // });
     });
 
     lightSwitch.addEventListener('change', function() {
@@ -271,5 +273,24 @@
       recognition.start();
       document.getElementById('voiceStatus').textContent = '聆聽中...';
     };
+
+    function updateUIPosition(marker) {
+      if (marker.object3D.visible) {
+        const worldPos = new THREE.Vector3();
+        marker.object3D.getWorldPosition(worldPos);
+
+        // 轉換到螢幕座標
+        const camera = scene.camera;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        const screenPos = worldPos.clone().project(camera);
+        const x = (screenPos.x * 0.5 + 0.5) * width;
+        const y = (-screenPos.y * 0.5 + 0.5) * height;
+
+        uiOverlay.style.transform = `translate(-50%, -50%) translate(${x}px, ${y - 100}px)`; // 上方 100px
+      }
+      requestAnimationFrame(updateUIPosition);
+    }
 </script>
 </html>
