@@ -290,13 +290,10 @@
         const x = (screenPos.x * 0.5 + 0.5) * width;
         const y = (-screenPos.y * 0.5 + 0.5) * height;
 
-        // 偏移到左方 250px
-        x -= 250; 
-
         // 邊界檢查，避免超出畫面
         const overlayWidth = 220; // UI 寬度
         const overlayHeight = 120; // UI 高度
-        if (x < 0) x = 10;
+        if (x < 0) x = 20;
         if (x + overlayWidth > width) x = width - overlayWidth - 10;
         if (y < 0) y = 10;
         if (y + overlayHeight > height) y = height - overlayHeight - 10;
