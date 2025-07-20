@@ -44,31 +44,23 @@
 
 <body>
 
-  <div id="uiOverlay" class="overlay-ui">
+  <!-- <div id="uiOverlay" class="overlay-ui">
     <h5 class="text-center mb-3" id="title">無</h5>
 
-    <!-- 狀態 -->
     <div class="mb-2">
       狀態：<span id="statusText">關閉</span>
     </div>
 
-    <!-- 電量 -->
     <div class="mb-2">
       電量：<span id="batteryText">0%</span>
     </div>
 
-    <!-- 亮度 -->
     <div class="mb-2">
       亮度：
       <input type="range" id="brightnessRange" min="0" max="100" value="50">
       <span id="brightnessValue">50%</span>
     </div>
 
-    <!-- 控制按鈕 -->
-    <!-- <div class="btn-group w-100 mb-2">
-      <button class="btn btn-success me-2" id="btnOn">開</button>
-      <button class="btn btn-danger" id="btnOff">關</button>
-    </div> -->
     <div class="d-flex align-items-center justify-content-between mb-3 gap-3">
 
       <div class="form-check form-switch mb-0">
@@ -76,7 +68,6 @@
         <label class="form-check-label" for="lightSwitch">關/開</label>
       </div>
 
-      <!-- 語音控制 -->
       <div class="text-center">
         <button id="voiceBtn" class="btn btn-outline-light rounded-circle" style="width:45px;height:45px;">
           <i class="fas fa-microphone " style="font-size:1.5rem;"></i>
@@ -85,7 +76,7 @@
       </div>
     </div>
     
-  </div>
+  </div> -->
 
   <a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
 
@@ -93,6 +84,8 @@
       <a-asset-item id="exoFont" src="fonts/exoBlack.typeface.json"></a-asset-item>
       <img id="pixels" src="images/pixels.png" />
     </a-assets>
+
+    <a-entity camera></a-entity>
 
     <!-- A Marker -->
     <a-marker type="pattern" url="data/letterA.patt">
@@ -103,24 +96,22 @@
     <a-marker type="pattern" url="data/letterB.patt">
       <!-- <a-box class="lightBox" position="0 0.5 0" color="gray"></a-box> -->
     </a-marker>
-
-    <a-entity camera></a-entity>
       
   </a-scene>
 </body>
 <script>
-    const uiOverlay = document.getElementById('uiOverlay');
-    const statusText = document.getElementById('statusText');
-    const batteryText = document.getElementById('batteryText');
-    const brightnessRange = document.getElementById('brightnessRange');
-    const brightnessValue = document.getElementById('brightnessValue');
-    // const box = document.getElementById('lightBox');
-    const lightSwitch = document.getElementById('lightSwitch');
+    // const uiOverlay = document.getElementById('uiOverlay');
+    // const statusText = document.getElementById('statusText');
+    // const batteryText = document.getElementById('batteryText');
+    // const brightnessRange = document.getElementById('brightnessRange');
+    // const brightnessValue = document.getElementById('brightnessValue');
+    // const lightSwitch = document.getElementById('lightSwitch');
+    // const title = document.getElementById('title');
 
     const markers = document.querySelectorAll('a-marker');
-    const title = document.getElementById('title');
 
     const cameraEl = document.querySelector('[camera]');
+    const markerData = {}; // 存每個 marker 的 UI
 
     let lightOn = false;
     let battery = 0;
@@ -137,6 +128,44 @@
     let markerVisible = false;
     // let box;
     markers.forEach(marker => {
+
+      const markerId = marker.id || `marker-${Math.random()}`; // 沒 id 就自動生成
+      markerData[markerId] = { el: marker };
+
+      // 動態產生 UI
+      const ui = document.createElement('div');
+      ui.className = 'overlay-ui';
+      ui.id = markerId;
+      ui.innerHTML = `
+        <h5 class="text-center mb-3" id="${markerId}_title">無</h5>
+        <div class="mb-2">狀態：<span id="${markerId}_statusText">關閉</span></div>
+        <div class="mb-2">電量：<span id="${markerId}_batteryText">0%</span></div>
+        <div class="mb-2">亮度：<input type="range" id="${markerId}_brightnessRange" min="0" max="100" value="50">50%</div>
+        <div class="d-flex align-items-center justify-content-between mb-3 gap-3">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="${markerId}_lightSwitch">
+            <label class="form-check-label" for="${markerId}_lightSwitch">關/開</label>
+          </div>
+
+          <div class="text-center">
+            <button id="${markerId}_voiceBtn" class="btn btn-outline-light rounded-circle" style="width:45px;height:45px;">
+              <i class="fas fa-microphone " style="font-size:1.5rem;"></i>
+            </button>
+            <div id="${markerId}_voiceStatus" class="small mt-1 text-light d-inline-block">語音關閉</div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(ui);
+      markerData[markerId].ui = ui;
+
+      const statusText = document.getElementById(`${markerId}_statusText`);
+      const batteryText = document.getElementById(`${markerId}_batteryText`);
+      const brightnessRange = document.getElementById(`${markerId}_brightnessRange`);
+      const brightnessValue = document.getElementById(`${markerId}_brightnessValue`);
+      const lightSwitch = document.getElementById(`${markerId}_lightSwitch`);
+      const title = document.getElementById(`${markerId}_title`);
+
       marker.addEventListener('markerFound', () => {
         const url = marker.getAttribute('url');
         const match = url.match(/letter([A-Z])\.patt$/);
@@ -147,7 +176,7 @@
           // console.log('偵測到 Marker:', letter);
           markerVisible = true;
           // uiOverlay.style.display = 'block';
-          updateUIPosition(marker);
+          updateUIPosition(marker, markerData[markerId].ui);
         }
       });
 
@@ -155,64 +184,48 @@
         title.textContent = '無';
         // console.log('Marker 遺失');
         markerVisible = false;
-        uiOverlay.style.display = 'none';
+        markerData[markerId].ui.style.display = 'none';
       });
 
+      lightSwitch.addEventListener('change', function() {
 
-      
-      // 每幀更新按鈕位置，使其跟隨 marker
-      // const scene = document.querySelector('a-scene');
-      // scene.addEventListener('renderstart', () => {
-      //   scene.addEventListener('render-target-loaded', () => {
-      //     scene.addEventListener('arframe', () => {
-      //       if (marker.object3D.visible) {
-      //         const worldPosition = marker.object3D.getWorldPosition(new THREE.Vector3());
-      //         const camera = scene.camera;
-      //         const vector = worldPosition.clone().project(camera);
-      //         const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-      //         const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+        if (this.checked) {
+          lightOn = true;
+          statusText.innerText = '開啟';
+          // box.setAttribute('color', 'yellow');
+        } else {
+          lightOn = false;
+          statusText.innerText = '關閉';
+          // box.setAttribute('color', 'gray');
+        }
+      });
 
-      //         uiOverlay.style.left = `${x - uiOverlay.offsetWidth / 2}px`;
-      //         uiOverlay.style.top = `${y - uiOverlay.offsetHeight - 20}px`;
-      //         uiOverlay.style.display = 'block';
-      //       } else {
-      //         uiOverlay.style.display = 'none';
-      //       }
-      //     });
-      //   });
-      // });
+      brightnessRange.addEventListener('input', (e) => {
+        const brightness = e.target.value;
+        brightnessValue.innerText = `${brightness}%`;
+        // box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
+      });
+
     });
 
-    lightSwitch.addEventListener('change', function() {
+    // lightSwitch.addEventListener('change', function() {
 
-      if (this.checked) {
-        lightOn = true;
-        statusText.innerText = '開啟';
-        // box.setAttribute('color', 'yellow');
-      } else {
-        lightOn = false;
-        statusText.innerText = '關閉';
-        // box.setAttribute('color', 'gray');
-      }
-    });
-
-    // btnOn.addEventListener('click', () => {
-    //   lightOn = true;
-    //   statusText.innerText = '開啟';
-    //   box.setAttribute('color', 'yellow');
+    //   if (this.checked) {
+    //     lightOn = true;
+    //     statusText.innerText = '開啟';
+    //     // box.setAttribute('color', 'yellow');
+    //   } else {
+    //     lightOn = false;
+    //     statusText.innerText = '關閉';
+    //     // box.setAttribute('color', 'gray');
+    //   }
     // });
 
-    // btnOff.addEventListener('click', () => {
-    //   lightOn = false;
-    //   statusText.innerText = '關閉';
-    //   box.setAttribute('color', 'gray');
+    // brightnessRange.addEventListener('input', (e) => {
+    //   const brightness = e.target.value;
+    //   brightnessValue.innerText = `${brightness}%`;
+    //   // box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
     // });
-
-    brightnessRange.addEventListener('input', (e) => {
-      const brightness = e.target.value;
-      brightnessValue.innerText = `${brightness}%`;
-      // box.setAttribute('scale', `${1 + brightness / 100} ${1 + brightness / 100} ${1 + brightness / 100}`);
-    });
 
     let recognizing = false;
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -275,7 +288,7 @@
       document.getElementById('voiceStatus').textContent = '聆聽中...';
     };
 
-    function updateUIPosition(marker) {
+    function updateUIPosition(marker, uiOverlay) {
       const scene = document.querySelector('a-scene');
       if (marker.object3D.visible) {
         const worldPos = new THREE.Vector3();
