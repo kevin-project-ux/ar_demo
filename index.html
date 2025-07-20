@@ -146,7 +146,7 @@
           title.textContent = `燈光 ${letter}`;
           // console.log('偵測到 Marker:', letter);
           markerVisible = true;
-          uiOverlay.style.display = 'block';
+          // uiOverlay.style.display = 'block';
           updateUIPosition(marker);
         }
       });
@@ -290,7 +290,16 @@
         const x = (screenPos.x * 0.5 + 0.5) * width;
         const y = (-screenPos.y * 0.5 + 0.5) * height;
 
-        uiOverlay.style.transform = `translate(-50%, -50%) translate(${x}px, ${y - 100}px)`; // 上方 100px
+        // 邊界檢查，避免超出畫面
+        const overlayWidth = 220; // UI 寬度
+        const overlayHeight = 120; // UI 高度
+        if (x < 0) x = 10;
+        if (x + overlayWidth > width) x = width - overlayWidth - 10;
+        if (y < 0) y = 10;
+        if (y + overlayHeight > height) y = height - overlayHeight - 10;
+
+        uiOverlay.style.transform = `translate(${x}px, ${y}px)`;
+        uiOverlay.style.display = 'block';
       }
       requestAnimationFrame(updateUIPosition);
     }
