@@ -9,11 +9,13 @@
 <button id="startBtn">開始錄音</button>
 <button id="stopBtn" disabled>停止錄音</button>
 <audio id="player" controls></audio>
+<pre id="output"></pre>
 
 <script>
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
 const player = document.getElementById('player');
+const output = document.getElementById('output');
 
 let mediaRecorder;
 let audioChunks = [];
@@ -31,6 +33,11 @@ startBtn.addEventListener('click', async () => {
     const audioBuffer = await new AudioContext().decodeAudioData(arrayBuffer);
     const wavBlob = encodeWAV(audioBuffer);
     const audioURL = URL.createObjectURL(wavBlob);
+
+    // 轉換成 Base64
+    const base64Audio = await blobToBase64(audioBlob);
+    output.textContent = base64Audio;
+
     player.src = audioURL;
   };
 
@@ -80,6 +87,15 @@ function writeString(view, offset, str) {
   for (let i = 0; i < str.length; i++) {
     view.setUint8(offset + i, str.charCodeAt(i));
   }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]); // 去掉 data:audio/webm;base64,
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 </script>
 </body>
