@@ -50,6 +50,55 @@
       display: inline-block;
       width:40px;
     }
+
+    .remote-circle {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+    }
+
+    .circle-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #444;
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: none;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .circle-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .toggle-btn.on {
+      background: #28a745; /* 綠色 */
+    }
+
+    .battery-btn span {
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .brightness-control {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .brightness-control.active {
+      display: block;
+    }
+
+    #brightnessRange {
+      width: 80%;
+    }
   </style>
 </head>
 
@@ -58,41 +107,56 @@
   <div id="uiOverlay" class="test-overlay-ui">
     <h5 class="text-center mb-3" id="title">無</h5>
 
-    <div class="d-flex align-items-center fs-1 mb-2 gap-3">
-      <!-- 狀態： -->
-      <i class="fas fa-lightbulb"></i>
-      <!-- <span id="statusText">關閉</span> -->
-      <div class="form-check form-switch mb-0">
+    <div class="remote-circle">
+
+      <button class="circle-btn bg-success text-white">
+        <i class="fas fa-lightbulb"></i>
         <input class="form-check-input" type="checkbox" id="lightSwitch">
-        <!-- <label class="form-check-label" for="lightSwitch">關/開</label> -->
-      </div>
-    </div>
-
-    <div class="d-flex align-items-center fs-1 mb-2 gap-3">
-      <!-- 電量： -->
-      <i class="fas fa-battery-full"></i>
-      <span id="batteryText">0%</span>
-    </div>
-
-    <div class="d-flex align-items-center fs-1 mb-2 gap-3">
-      <!-- 亮度： -->
-      <i class="fas fa-sun"></i>
-      <input type="range" id="brightnessRange" min="0" max="100" value="50">
-      <span id="brightnessValue">50%</span>
-    </div>
-
-    <!-- <div class="text-center mb-2">
-      <div class="form-check form-switch mb-0">
-        <input class="form-check-input" type="checkbox" id="lightSwitch">
-        <label class="form-check-label" for="lightSwitch">關/開</label>
-      </div>
-    </div> -->
-
-    <div class="text-center fs-1 gap-3">
-      <button id="voiceBtn" class="btn btn-outline-light rounded-circle" style="width:45px;height:45px;">
-        <i class="fas fa-microphone " style="font-size:1.5rem;"></i>
       </button>
-      <div id="voiceStatus" class="small mt-1 text-light d-inline-block">語音關閉</div>
+
+      <button class="circle-btn brightness-btn" id="brightnessBtn">
+        <i class="fas fa-sun"></i>
+      </button>
+
+      <div class="circle-btn battery-btn">
+        <i class="fas fa-battery-full"></i>
+        <span id="batteryText">0%</span>
+      </div>
+
+      <!-- 亮度控制滑桿（隱藏，點亮度按鈕才出現） -->
+      <div class="brightness-control" id="brightnessControl">
+        <input type="range" id="brightnessRange" min="0" max="100" value="50">
+        <span id="brightnessValue">50%</span>
+      </div>
+
+      <button id="voiceBtn" class="circle-btn text-white">
+        <i class="fas fa-microphone"></i>
+      </button>
+
+      <!-- <div class="d-flex align-items-center fs-1 mb-2 gap-3">
+        <i class="fas fa-battery-full"></i>
+        <span id="batteryText">0%</span>
+      </div> -->
+
+      <!-- <div class="d-flex align-items-center fs-1 mb-2 gap-3">
+        <i class="fas fa-sun"></i>
+        <input type="range" id="brightnessRange" min="0" max="100" value="50" style="width:40%;">
+        <span id="brightnessValue">50%</span>
+      </div> -->
+
+      <!-- <div class="text-center mb-2">
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input" type="checkbox" id="lightSwitch">
+          <label class="form-check-label" for="lightSwitch">關/開</label>
+        </div>
+      </div> -->
+
+      <!-- <div class="text-center fs-1 gap-3">
+        <button id="voiceBtn" class="btn btn-outline-light rounded-circle" style="width:45px;height:45px;">
+          <i class="fas fa-microphone " style="font-size:1.5rem;"></i>
+        </button>
+        <div id="voiceStatus" class="small mt-1 text-light d-inline-block">語音關閉</div>
+      </div> -->
     </div>
     
   </div>
