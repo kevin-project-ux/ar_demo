@@ -17,6 +17,7 @@
       overflow: hidden;
     }
     .test-overlay-ui {
+      width: 180px;
       position: fixed;
       bottom: 20px;
       left: 50%;
@@ -27,7 +28,7 @@
       padding: 12px;
       font-size: 16px;
       pointer-events: auto;
-      min-width: 200px;
+      min-width: 180px;
       display: none;
       z-index: 999;
     }
@@ -58,8 +59,8 @@
     }
 
     .circle-btn {
-      width: 80px;
-      height: 80px;
+      width: 65px;
+      height: 65px;
       border-radius: 50%;
       background: #444;
       color: white;
@@ -72,6 +73,7 @@
       position: relative;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.2s;
+      margin: 0 auto; /* 確保按鈕本身居中 */
     }
 
     .circle-btn:hover {
@@ -107,7 +109,7 @@
   <div id="uiOverlay" class="test-overlay-ui">
     <h5 class="text-center mb-3" id="title">無</h5>
     
-    <div class="row g-3">
+    <div class="row g-2">
 
       <div class="col-6">
         <button class="circle-btn bg-success text-white">
