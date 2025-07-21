@@ -212,15 +212,15 @@
       recognition.continuous = true;
       recognition.interimResults = false;
 
-      document.getElementById('voiceBtn').addEventListener('click', () => {
+      document.getElementById(`${markerId}_voiceBtn`).addEventListener('click', () => {
         if (!recognizing) {
           recognition.start();
           recognizing = true;
-          document.getElementById('voiceStatus').textContent = '聆聽中...';
+          document.getElementById(`${markerId}_voiceStatus`).textContent = '聆聽中...';
         } else {
           recognition.stop();
           recognizing = false;
-          document.getElementById('voiceStatus').textContent = '語音關閉';
+          document.getElementById(`${markerId}_voiceStatus`).textContent = '語音關閉';
         }
       });
 
@@ -264,7 +264,7 @@
       recognition.onend = () => {
         recognizing = false;
         recognition.start();
-        document.getElementById('voiceStatus').textContent = '聆聽中...';
+        document.getElementById(`${markerId}_voiceStatus`).textContent = '聆聽中...';
       };
 
     });
