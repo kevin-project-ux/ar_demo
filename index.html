@@ -113,7 +113,7 @@
       <div class="col-6">
         <button class="circle-btn bg-success text-white">
           <i class="fas fa-lightbulb"></i>
-          <input class="form-check-input" type="checkbox" id="lightSwitch">
+          <input class="form-check-input d-none" type="checkbox" id="lightSwitch">
         </button>
       </div>
 
@@ -135,7 +135,7 @@
           <span id="batteryText">0%</span>
         </div>
       </div>
-      
+
       <div class="col-6">
         <button id="voiceBtn" class="circle-btn text-white">
           <i class="fas fa-microphone"></i>
@@ -245,12 +245,12 @@
       document.body.appendChild(ui);
       markerData[markerId].ui = ui;
 
-      const statusText      = ui.querySelector(`#${markerId}_statusText`);
-      const batteryText     = ui.querySelector(`#${markerId}_batteryText`);
-      const brightnessRange = ui.querySelector(`#${markerId}_brightnessRange`);
-      const brightnessValue = ui.querySelector(`#${markerId}_brightnessValue`);
-      const lightSwitch     = ui.querySelector(`#${markerId}_lightSwitch`);
-      const title           = ui.querySelector(`#${markerId}_title`);
+      const statusText      = document.getElementById(`${markerId}_statusText`);
+      const batteryText     = document.getElementById(`${markerId}_batteryText`);
+      const brightnessRange = document.getElementById(`${markerId}_brightnessRange`);
+      const brightnessValue = document.getElementById(`${markerId}_brightnessValue`);
+      const lightSwitch     = document.getElementById(`${markerId}_lightSwitch`);
+      const title           = document.getElementById(`${markerId}_title`);
 
       marker.addEventListener('markerFound', () => {
         const url = marker.getAttribute('url');
