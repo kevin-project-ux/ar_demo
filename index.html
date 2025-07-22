@@ -119,9 +119,9 @@
     }
 
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
-      70% { box-shadow: 0 0 0 15px rgba(255, 0, 0, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(0, 123, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
     }
   </style>
 </head>
@@ -136,25 +136,15 @@
       <div class="col-6">
         <button class="circle-btn" id="lightSwitch">
           <i class="fas fa-lightbulb"></i>
-          <!-- <input class="form-check-input d-none" type="checkbox" id="lightSwitch"> -->
         </button>
       </div>
 
       <div class="col-6">
-        <!-- <button class="circle-btn brightness-btn" id="brightnessBtn">
-          <i class="fas fa-sun"></i>
-        </button> -->
         <div class="circle-btn" id="brightnessKnob">
           <div class="knob-center">
             <i class="fas fa-sun"></i>
             <span id="knobValue">50%</span>
           </div>
-        </div>
-
-        <!-- 亮度控制滑桿（隱藏，點亮度按鈕才出現） -->
-        <div class="brightness-control" id="brightnessControl">
-          <input type="range" id="brightnessRange" min="0" max="100" value="50">
-          <span id="brightnessValue">50%</span>
         </div>
       </div>
 
@@ -434,11 +424,9 @@
     powerBtn.addEventListener('click', () => {
       lightOn = !lightOn;
       if (lightOn) {
-        powerBtn.classList.remove('bg-secondary');
         powerBtn.classList.add('bg-warning'); // 開燈 -> 黃色
       } else {
         powerBtn.classList.remove('bg-warning');
-        powerBtn.classList.add('bg-secondary'); // 關燈 -> 灰色
       }
     });
 
