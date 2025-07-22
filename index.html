@@ -34,13 +34,14 @@
     }
     .overlay-ui {
       position: absolute;
+      width: 180px;
       background: rgba(0, 0, 0, 0.6);
       color: #fff;
       border-radius: 12px;
       padding: 12px;
       font-size: 16px;
       pointer-events: auto;
-      min-width: 200px;
+      /*min-width: 200px;*/
       display: none;
       z-index: 999;
     }
@@ -242,7 +243,7 @@
         <h5 class="text-center mb-3" id="${markerId}_title">無</h5>
         <div class="mb-2">狀態：<span id="${markerId}_statusText">關閉</span></div>
         <div class="mb-2">電量：<span id="${markerId}_batteryText">0%</span></div>
-        <div class="mb-2">亮度：<input type="range" id="${markerId}_brightnessRange" min="0" max="100" value="50">
+        <div class="mb-2">亮度：<input type="range" id="${markerId}_brightnessRange" min="0" max="100" value="50" style="width:40%;">
           <span id="${markerId}_brightnessValue">50%</span>
         </div>
         <div class="d-flex align-items-center justify-content-between mb-3 gap-3">
