@@ -112,6 +112,17 @@
       font-size: 16px;
       font-weight: bold;
     }
+
+    /* 語音啟動時的閃爍效果 */
+    .voice-active {
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 0, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+    }
   </style>
 </head>
 
@@ -411,6 +422,41 @@
       }
       requestAnimationFrame(updateUIPosition);
     }
+
+    const lightSwitch = document.getElementById('lightSwitch');
+    let lightOn = false;
+
+    const powerBtn = document.getElementById('lightSwitch');
+    const voiceBtn = document.getElementById('voiceBtn');
+
+    let lightOn = false;
+    let voiceActive = false;
+
+    // 開關燈
+    powerBtn.addEventListener('click', () => {
+      lightOn = !lightOn;
+      if (lightOn) {
+        powerBtn.classList.remove('bg-secondary');
+        powerBtn.classList.add('bg-warning'); // 開燈 -> 黃色
+      } else {
+        powerBtn.classList.remove('bg-warning');
+        powerBtn.classList.add('bg-secondary'); // 關燈 -> 灰色
+      }
+    });
+
+    // 語音控制
+    voiceBtn.addEventListener('click', () => {
+      voiceActive = !voiceActive;
+      if (voiceActive) {
+        voiceBtn.classList.add('voice-active');
+        // 啟動語音功能
+        startVoiceRecognition();
+      } else {
+        voiceBtn.classList.remove('voice-active');
+        // 停止語音功能
+        stopVoiceRecognition();
+      }
+    });
 
     const knob = document.getElementById('brightnessKnob');
     const knobValue = document.getElementById('knobValue');
