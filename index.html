@@ -101,6 +101,30 @@
     #brightnessRange {
       width: 80%;
     }
+
+    .circle-knob {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 70%, #ccc 100%);
+      border: 4px solid #f0ad4e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      user-select: none;
+    }
+
+    .knob-center {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    #knobValue {
+      display: block;
+      font-size: 16px;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -112,16 +136,22 @@
     <div class="row g-2">
 
       <div class="col-6">
-        <button class="circle-btn bg-success text-white">
+        <button class="circle-btn" id="lightSwitch">
           <i class="fas fa-lightbulb"></i>
-          <input class="form-check-input d-none" type="checkbox" id="lightSwitch">
+          <!-- <input class="form-check-input d-none" type="checkbox" id="lightSwitch"> -->
         </button>
       </div>
 
       <div class="col-6">
-        <button class="circle-btn brightness-btn" id="brightnessBtn">
+        <!-- <button class="circle-btn brightness-btn" id="brightnessBtn">
           <i class="fas fa-sun"></i>
-        </button>
+        </button> -->
+        <div class="circle-knob" id="brightnessKnob">
+          <div class="knob-center">
+            <i class="fas fa-sun"></i>
+            <span id="knobValue">50%</span>
+          </div>
+        </div>
 
         <!-- 亮度控制滑桿（隱藏，點亮度按鈕才出現） -->
         <div class="brightness-control" id="brightnessControl">
@@ -378,6 +408,15 @@
         const x = (screenPos.x * 0.5 + 0.5) * width;
         const y = (-screenPos.y * 0.5 + 0.5) * height;
 
+        // 檢查重疊，調整 y
+        uiPositions.forEach(pos => {
+          if (Math.abs(pos.x - x) < 150 && Math.abs(pos.y - y) < 80) {
+            y += 80; // 偏移避免重疊
+          }
+        });
+
+        uiPositions.push({x, y});
+
         uiOverlay.style.left = `${x}px`;
         uiOverlay.style.top = `${y+100}px`;
         uiOverlay.style.transform = 'translate(-50%, -100%)'; // 水平置中 + 往上移
@@ -385,5 +424,33 @@
       }
       requestAnimationFrame(updateUIPosition);
     }
+
+    const knob = document.getElementById('brightnessKnob');
+    const knobValue = document.getElementById('knobValue');
+
+    let brightness = 50; // 初始亮度
+    let isHolding = false;
+
+    knob.addEventListener('touchstart', () => {
+      isHolding = true;
+    });
+
+    knob.addEventListener('touchmove', (e) => {
+      if (isHolding) {
+        const touch = e.touches[0];
+        const rect = knob.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const angle = Math.atan2(touch.clientY - centerY, touch.clientX - centerX) * (180 / Math.PI) + 180;
+        brightness = Math.round((angle / 360) * 100);
+        knobValue.textContent = `${brightness}%`;
+        knob.style.border = `4px solid hsl(${brightness}, 100%, 50%)`; // 顏色動態
+      }
+    });
+
+    knob.addEventListener('touchend', () => {
+      isHolding = false;
+    });
 </script>
 </html>
