@@ -406,9 +406,10 @@
 
         uiPositions.push({x, y});
 
-        uiOverlay.style.left = `${x}px`;
-        uiOverlay.style.top = `${y+100}px`;
-        uiOverlay.style.transform = 'translate(-50%, -100%)'; // 水平置中 + 往上移
+        // uiOverlay.style.left = `${x}px`;
+        // uiOverlay.style.top = `${y+100}px`;
+        // uiOverlay.style.transform = 'translate(-50%, -100%)'; // 水平置中 + 往上移
+        ui.style.transform = `translate(${x}px, ${y}px)`;
         uiOverlay.style.display = 'block';
       }
       requestAnimationFrame(updateUIPosition);
