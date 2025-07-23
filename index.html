@@ -189,7 +189,7 @@
     </div>
   </div>
 
-  <a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false;">
+  <a-scene embedded vr-mode-ui="enabled: true;" arjs="debugUIEnabled: true;">
 
     <a-assets>
       <a-asset-item id="exoFont" src="fonts/exoBlack.typeface.json"></a-asset-item>
@@ -234,9 +234,6 @@
 
       const markerId = marker.id || `marker-${Math.random()}`; // 沒 id 就自動生成
       markerData[markerId] = { el: marker };
-
-      // 模擬 marker 被找到
-      marker.emit('markerFound');
 
       // 動態產生 UI
       const ui = document.createElement('div');
